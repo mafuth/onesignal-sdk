@@ -14,7 +14,7 @@ class onesignal{
         $this->APP_EMAIL = $EMAIL;
     }
 
-    public function creatNotification($IDS){
+    public function creatNotification($IDS,$title,$msg,$img){
         $to = implode(',',$IDS);
         $msg = "";
         $img = "";
