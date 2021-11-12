@@ -242,6 +242,7 @@ class onesignal{
                 });
             });
             </script>";
+            return $CODE;
         }
     }
 }
