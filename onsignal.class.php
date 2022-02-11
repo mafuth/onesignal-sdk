@@ -15,7 +15,6 @@ class onesignal{
     }
 
     public function creatNotification($IDS,$title,$msg,$img){
-        $to = implode(',',$IDS);
         $msg = "";
         $img = "";
         $title = "";
@@ -30,7 +29,7 @@ class onesignal{
             $fields = array(
                 'app_id' => $this->APP_ID,
                 "headings" => $headings,
-                'include_player_ids' => array($to),
+                'include_player_ids' => $IDS,
                 'large_icon' => $this->APP_ICON,
                 'content_available' => true,
                 'contents' => $content
