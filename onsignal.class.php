@@ -13,117 +13,81 @@ class onesignal{
         $this->APP_SAFARI_WEB_ID = $SAFARI_WEB_ID;
         $this->APP_EMAIL = $EMAIL;
     }
-
-    public function creatNotification($IDS,$title,$msg,$img){
-        $msg = "";
-        $img = "";
-        $title = "";
-
+    public function sendImageMessage($IDS,$title,$msg,$img,$url){
         $content = array(
             "en" => $msg
         );
+        
         $headings = array(
             "en" => $title
         );
-        if ($img == '') {
-            $fields = array(
-                'app_id' => $this->APP_ID,
-                "headings" => $headings,
-                'include_player_ids' => $IDS,
-                'large_icon' => $this->APP_ICON,
-                'content_available' => true,
-                'contents' => $content
-            );
-        } else {
-            $ios_img = array(
-                "id1" => $img
-            );
-            $fields = array(
-                'app_id' => $this->APP_ID,
-                "headings" => $headings,
-                'include_player_ids' => array($to),
-                'contents' => $content,
-                "big_picture" => $img,
-                'large_icon' => $this->APP_ICON,
-                'content_available' => true,
-                "ios_attachments" => $ios_img
-            );
-
-        }
-        $KEY = $this->APP_KEY;
-        $headers = array(
-            "Authorization: Basic $KEY",
-            'Content-Type: application/json; charset=utf-8'
+        
+        $fields = array(
+            'app_id' => $this->APP_ID,
+            'include_player_ids' => $IDS,
+            'data' => array("foo" => "bar"),
+            "headings" => $headings,
+            'contents' => $content,
+            'url' => $url,
+            'chrome_web_image' => $img
         );
+        
+        $fields = json_encode($fields);
+        //print("\nJSON sent:\n");
+        //print($fields);
+        
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://onesignal.com/api/v1/notifications');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;
-    }
-    public function cancelNotification($NOTIFICATION_ID){ 
-        $app_id = $this->APP_ID;
-        $KEY = $this->APP_KEY;
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, 'https://onesignal.com/api/v1/notifications/'.$NOTIFICATION_ID.'?app_id='.$app_id.'');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-
-
-        $headers = array();
-        $headers[] = "Authorization: Basic $KEY";
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            $result = 'Error:' . curl_error($ch);
-        }
-        curl_close($ch); 
-        return $result;
-    }
-    public function getHistory(){
-        $APP_ID = $this->APP_ID;
-        $APP_MAIL = $this->APP_EMAIL;
-        $KEY = $this->APP_KEY;
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://app.onesignal.com/api/v1/notifications/{notification_id}/history');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\n    \"events\": \"clicked\",\n    \"app_id\": \"$APP_ID\",\n    \"email\": \"$APP_MAIL\"\n}");
-
-        $headers = array();
-        $headers[] = "Authorization: Basic $KEY";
-        $headers[] = 'Cache-Control: no-cache';
-        $headers[] = 'Content-Type: application/json';
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            $result = 'Error:' . curl_error($ch);
-        }
-        curl_close($ch);
-        return $result;
-    }
-    public function getDevices(){ 
-        $app_id = $this->APP_ID;
-        $KEY = $this->APP_KEY;
-        $ch = curl_init(); 
-        curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/players?app_id=" . $app_id); 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 
-                                                   "Authorization: Basic $KEY")); 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); 
+        curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8'));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        $response = curl_exec($ch); 
-        curl_close($ch); 
-        return $response; 
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+        
+        return $response;
     }
+
+    public function sendMessage($IDS,$title,$msg,$url){
+        $content = array(
+            "en" => $msg
+        );
+        
+        $headings = array(
+            "en" => $title
+        );
+        
+        $fields = array(
+            'app_id' => $this->APP_ID,
+            'include_player_ids' => $IDS,
+            'data' => array("foo" => "bar"),
+            "headings" => $headings,
+            'url' => $url,
+            'contents' => $content
+        );
+        
+        $fields = json_encode($fields);
+        //print("\nJSON sent:\n");
+        //print($fields);
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8'));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+        
+        return $response;
+    }
+    
     public function createCode($END_POINT,$VARIABLE,$AJAX_STATUS){ 
         $APP_ID = $this->$APP_ID;
         $APP_SAFARI_WEB_ID = $this->$APP_SAFARI_WEB_ID;
