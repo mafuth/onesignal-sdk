@@ -19,7 +19,12 @@ $ONESIGNAL =  new onesignal (
 
 send a notification 
 ```php
-$ONESIGNAL -> creatNotification('user ids to get notification','title of the notification','your message','image for notification');
+$ONESIGNAL -> creatNotification(
+'user ids to get notification',
+'title of the notification',
+'your message',
+'redirect url'
+);
 ```
 
 cancel a notification 
